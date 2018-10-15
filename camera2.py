@@ -77,7 +77,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("-n","--num-frames", type=int, default=num_frames,
         help="# of frames to loop over")
 ap.add_argument("-d", "--display", type=int, default=-1)
-ap.add_argument("-t", "--type", choices=['silica', 'tungsten', 'other'], help="specify the type of fiber for filenames")
+ap.add_argument("-t", "--type", type=str, default='qz', choices=['qz', 'w'], help="specify the type of fiber for filenames. \'w\' for tungsten, \'qz\' for silica.")
 
 pargs = vars(ap.parse_args())
 
@@ -140,9 +140,23 @@ print(end-start)
 os.chdir('/home/pi')
 
 today = str(datetime.date.today())
-files_today = glob.glob('*' + today + '*')
 
-np.savetxt("qzfiber" + str(len(files_today)) + "-" + today + "_"+ str(pargs.type) + ".dat",np.vstack((indices, ds)).transpose())
+files_today = glob.glob('qz' + '*' + today + '*')
+if pargs['type'] == 'w':
+    files_today = glob.glob('w' + '*' + today + '*')    
+
+if len(files_today) == 0:
+    number = 1
+else:
+    files_today = sorted(files_today)	
+    most_recent = files_today[-1]
+    number = int(most_recent.split('-',3)[1]) + 1
+
+number = str(number).zfill(3)
+
+filename = pargs['type'] + "fiber-" + number + "-" + today + ".dat"
+
+np.savetxt(filename, np.vstack((indices, ds)).transpose())
 """
 for foo in camera.capture_continuous(stream, 'yuv', use_video_port=True):
     #count += 1
