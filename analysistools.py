@@ -25,10 +25,8 @@ def psd(data, num_points, sample_rate, win="Hann"):
     return f, psd_data
 
 def lmfitter(t,data,fitfunc,guess):
-    #fitfunc = lambda p, x: p[0]*np.sin(x*p[1]+p[2]) + p[3] + p[4]*x
+    """Just a wrapper for scipy.optimize.leastsq"""
     errfunc = lambda p, x, y: fitfunc(p, x) - y
-    #guess = [1.0, 2*np.pi/517, 0, 0, 0]
     result = opt.leastsq(errfunc,guess,args=(t,data))
-
     return result[0]
 
