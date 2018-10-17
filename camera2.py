@@ -140,23 +140,31 @@ print(end-start)
 os.chdir('/home/pi')
 
 today = str(datetime.date.today())
+fpath_today = '/home/pi/' + today
+
+if not os.path.isdir(fpath_today) :
+    os.mkdir(fpath_today)
+
+os.chdir(fpath_today)
 
 files_today = glob.glob('qz' + '*' + today + '*')
 if pargs['type'] == 'w':
-    files_today = glob.glob('w' + '*' + today + '*')    
+    files_today = glob.glob('w' + '*' + today + '*')
 
 if len(files_today) == 0:
     number = 1
 else:
-    files_today = sorted(files_today)	
+    files_today = sorted(files_today)
     most_recent = files_today[-1]
     number = int(most_recent.split('-',3)[1]) + 1
 
 number = str(number).zfill(3)
-
 filename = pargs['type'] + "fiber-" + number + "-" + today + ".dat"
 
 np.savetxt(filename, np.vstack((indices, ds)).transpose())
+print("new file: " + "\'" + fpath_today + "\'" + filename + "\'")
+os.chdir('/home/pi')
+#np.savetxt("qzfiber" + str(len(files_today)) + "-" + today + "_"+ str(pargs.type) + ".dat",np.vstack((indices, ds)).transpose())
 """
 for foo in camera.capture_continuous(stream, 'yuv', use_video_port=True):
     #count += 1
@@ -176,3 +184,4 @@ for foo in camera.capture_continuous(stream, 'yuv', use_video_port=True):
 #print endt - startt
 #ser.write('3000')
 #ser.write('\n')
+
