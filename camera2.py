@@ -110,5 +110,27 @@ os.chdir('/home/pi')
 
 # prepare filename and write data to file
 today = str(datetime.date.today())
-files_today = glob.glob('*' + today + '*')
-np.savetxt("qzfiber" + str(len(files_today)) + "-" + today + "_"+ str(pargs.type) + ".dat",np.vstack((indices, ds)).transpose())
+
+fpath_today = '/home/pi/' + today
+if not os.path.isdir(fpath_today) :
+    os.mkdir(fpath_today)
+os.chdir(fpath_today)
+
+files_today = glob.glob('qz' + '*' + today + '*')
+if pargs['type'] == 'w':
+    files_today = glob.glob('w' + '*' + today + '*')
+
+if len(files_today) == 0:
+    number = 1
+else:
+    files_today = sorted(files_today)
+    most_recent = files_today[-1]
+    number = int(most_recent.split('-',3)[1]) + 1
+
+number = str(number).zfill(3)
+filename = pargs['type'] + "fiber-" + number + "-" + today + ".dat"
+
+np.savetxt(filename, np.vstack((indices, ds)).transpose())
+
+print("new file: " + "\'" + fpath_today + "\'" + filename + "\'")
+os.chdir('/home/pi')
